@@ -270,3 +270,24 @@
             .chat-box { margin: 10px; }
             .message { max-width: 85%; }
         }
+/* Configurações para celulares (telas até 768px) */
+
+@media (max-width: 768px) {
+    .app-container {
+        width: 100%; /* Ocupa a largura total da tela */
+        height: 100vh; /* Ocupa a altura total do visor */
+        border-radius: 0; /* Remove bordas arredondadas nos cantos */
+    }
+
+    .chat-header h1 {
+        font-size: 1.1rem; /* Diminui um pouco o título para não quebrar linha */
+    }
+
+    .message {
+        max-width: 85%; /* Deixa os balões de mensagem um pouco mais largos no celular */
+    }
+    
+    .input-area {
+        padding: 10px; /* Ajusta o espaçamento da área de digitação */
+    }
+}

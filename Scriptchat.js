@@ -1,7 +1,5 @@
-// A URL agora aponta para a sua função no servidor, não para a OpenAI diretamente
 const URL = "/.netlify/functions/chat";
 
-// O histórico permanece igual para manter a memória da Índex
 let historicoMensagens = [
     { 
         role: "system", 
@@ -48,47 +46,43 @@ async function enviarParaIA() {
     caixaChat.scrollTop = caixaChat.scrollHeight;
 
     try {
-        // Agora o fetch envia apenas as mensagens. 
-        // O Netlify receberá isso e adicionará a chave de API lá no servidor.
         const resposta = await fetch(URL, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                messages: historicoMensagens
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: historicoMensagens })
         });
 
-        if (!resposta.ok) throw new Error("Erro na função: " + resposta.status);
-
         const dados = await resposta.json();
-        
-        // Ajuste para ler a resposta vinda da sua função
-        const respostaIA = dados.choices[0].message.content;
 
-        historicoMensagens.push({ role: "assistant", content: respostaIA });
+        // VALIDAÇÃO DE SEGURANÇA: Verifica se a resposta da OpenAI é válida
+        if (dados && dados.choices && dados.choices[0]) {
+            const respostaIA = dados.choices[0].message.content;
+            historicoMensagens.push({ role: "assistant", content: respostaIA });
 
-        document.getElementById(typingId).remove();
+            document.getElementById(typingId).remove();
 
-        const aiHTML = `
-            <div class="message-wrapper ai-wrapper">
-                <div class="message ai-message">
-                    <span class="sender-name">IA Generativa SENAI</span>
-                    <p>${respostaIA.replace(/\n/g, '<br>')}</p>
-                    <span class="time">${obterHoraAtual()}</span>
+            const aiHTML = `
+                <div class="message-wrapper ai-wrapper">
+                    <div class="message ai-message">
+                        <span class="sender-name">IA Generativa SENAI</span>
+                        <p>${respostaIA.replace(/\n/g, '<br>')}</p>
+                        <span class="time">${obterHoraAtual()}</span>
+                    </div>
                 </div>
-            </div>
-        `;
-        caixaChat.insertAdjacentHTML('beforeend', aiHTML);
+            `;
+            caixaChat.insertAdjacentHTML('beforeend', aiHTML);
+        } else {
+            // Se a API retornar erro de saldo ou chave, ele cai aqui
+            throw new Error(dados.error || "Resposta incompleta da API");
+        }
 
     } catch (erro) {
-        console.error("Falha:", erro.message);
+        console.error("Falha detalhada:", erro.message);
         document.getElementById(typingId).remove();
         caixaChat.insertAdjacentHTML('beforeend', `
             <div class="message-wrapper ai-wrapper">
                 <div class="message ai-message" style="color: #ef4444;">
-                    <p><strong>Erro:</strong> Falha ao processar via servidor seguro.</p>
+                    <p><strong>Erro:</strong> ${erro.message}</p>
                 </div>
             </div>
         `);
@@ -96,7 +90,6 @@ async function enviarParaIA() {
     caixaChat.scrollTop = caixaChat.scrollHeight;
 }
 
-// Eventos de Enter e Tema permanecem iguais...
 document.getElementById("pergunta").addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         event.preventDefault();

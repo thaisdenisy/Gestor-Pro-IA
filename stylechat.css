@@ -49,7 +49,7 @@
 body {
     background: var(--bg-body);
     height: 100vh;
-    height: 100dvh; /* Altura dinâmica para mobile */
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -73,22 +73,23 @@ body {
     border: 1px solid var(--header-border);
     border-radius: 24px;
     overflow: hidden;
-    z-index: 1;
 }
 
-/* Fundo Estilo WhatsApp */
+/* Fundo estilo WhatsApp */
 .app-container::before {
     content: "";
     position: absolute;
     inset: 0;
     background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
     opacity: var(--pattern-opacity);
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
 }
 
 /* Header */
 .chat-header {
+    position: relative;
+    z-index: 10;
     height: 75px;
     background: var(--header-bg);
     backdrop-filter: blur(20px);
@@ -97,62 +98,85 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    flex-shrink: 0;
 }
 
 .header-info { display: flex; align-items: center; gap: 12px; }
+.header-actions { display: flex; align-items: center; gap: 5px; }
 
 .avatar {
-    width: 45px;
-    height: 45px;
+    width: 48px;
+    height: 48px;
     background: #ffffff; 
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 6px;
 }
 
 .avatar img { width: 100%; height: 100%; object-fit: contain; }
 
-.user-details h1 { font-size: 1rem; font-weight: 700; }
-.status { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+.user-details h1 { font-size: 1.05rem; font-weight: 700; margin-bottom: 1px; }
+.status { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--icon-color);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+}
 
 /* Chat Area */
 .chat-box {
+    position: relative;
+    z-index: 5;
     flex: 1;
+    margin: 15px 20px; 
     padding: 20px;
     background: var(--chat-surface-bg);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--header-border);
+    border-radius: 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.message-wrapper { display: flex; width: 100%; animation: fadeIn 0.3s ease; }
+.chat-box::-webkit-scrollbar { width: 5px; }
+.chat-box::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+.message-wrapper { display: flex; width: 100%; animation: fadeIn 0.3s ease-out; }
 .ai-wrapper { justify-content: flex-start; }
 .user-wrapper { justify-content: flex-end; }
 
 .message {
     max-width: 80%;
-    padding: 10px 14px;
+    padding: 10px 14px 14px 14px;
     font-size: 0.95rem;
+    line-height: 1.5;
     box-shadow: var(--bubble-shadow);
-    position: relative;
 }
 
-.ai-message { background: var(--bubble-ai); border-radius: 0 12px 12px 12px; }
-.user-message { background: var(--bubble-user); border-radius: 12px 0 12px 12px; }
+.ai-message { background: var(--bubble-ai); border-radius: 0 16px 16px 16px; }
+.user-message { background: var(--bubble-user); border-radius: 16px 0 16px 16px; }
+
+.sender-name { font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.time { font-size: 0.65rem; color: var(--text-muted); align-self: flex-end; margin-top: 4px; }
 
 /* Input Area */
 .input-area {
+    position: relative;
+    z-index: 10;
     background: var(--input-area-bg);
-    padding: 10px 15px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
+    gap: 12px;
 }
 
 .input-wrapper {
@@ -184,34 +208,32 @@ input[type="text"] {
     align-items: center;
 }
 
-/* RESPONSIVIDADE PARA CELULAR */
+/* AJUSTES PARA CELULAR */
 @media (max-width: 768px) {
-    body {
-        align-items: flex-start; /* Alinha no topo no celular */
-    }
+    body { align-items: flex-start; }
 
     .app-container {
         height: 100vh;
-        height: 100dvh; /* Ocupa 100% da tela real do celular */
-        width: 100vw;
+        height: 100dvh;
         max-width: 100vw;
-        border-radius: 0; /* Remove as bordas arredondadas no celular */
+        border-radius: 0;
         border: none;
     }
 
     .chat-box {
-        margin: 0; /* Remove as margens laterais que criavam o efeito de bloco */
+        margin: 0; /* Remove as margens para ocupar a tela toda */
         border-radius: 0;
+        border: none;
         padding: 15px;
+        background: transparent; /* Deixa o padrão do fundo aparecer mais */
     }
 
-    .message {
-        max-width: 88%; /* Ganha mais espaço horizontal no celular */
-    }
-
-    .chat-header {
-        padding: 0 15px;
-    }
+    .message { max-width: 88%; }
+    
+    .chat-header { height: 65px; padding: 0 15px; }
+    .user-details h1 { font-size: 0.95rem; }
+    
+    .input-area { padding: 10px 15px; }
 }
 
 @keyframes fadeIn {

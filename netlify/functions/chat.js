@@ -1,21 +1,18 @@
 exports.handler = async (event) => {
   try {
     const { messages } = JSON.parse(event.body);
-    const CHAVE = process.env.OPENAI_API_KEY;
+    const CHAVE = process.env.OPENAI_API_KEY; // O Netlify vai usar a chave que você salvou lá
 
-    // Mude a URL abaixo para a do seu provedor (Exemplo: OpenRouter ou Together AI)
-    const PROVIDER_URL = "https://openrouter.ai/api/v1/chat/completions"; 
-
-    const response = await fetch(PROVIDER_URL, {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${CHAVE}`
+        "Authorization": `Bearer ${CHAVE}` // Garante que o cabeçalho de autenticação seja enviado
       },
       body: JSON.stringify({
-        model: "gpt-oss-120b", // Certifique-se de usar o ID exato do modelo aqui
+        model: "mixtral-8x7b-32768", // Ou o ID específico do modelo que você pegou no Groq
         messages: messages,
-        max_tokens: 1000
+        temperature: 0.7
       })
     });
 
@@ -24,7 +21,7 @@ exports.handler = async (event) => {
     if (!response.ok) {
       return {
         statusCode: response.status,
-        body: JSON.stringify({ error: data.error?.message || "Erro no provedor OSS" })
+        body: JSON.stringify({ error: data.error?.message || "Erro na GroqCloud" })
       };
     }
 

@@ -1,20 +1,21 @@
-
 exports.handler = async (event) => {
   try {
     const { messages } = JSON.parse(event.body);
     const CHAVE = process.env.OPENAI_API_KEY;
 
-    // Usando o fetch nativo do Node.js (mais estável no Netlify)
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Mude a URL abaixo para a do seu provedor (Exemplo: OpenRouter ou Together AI)
+    const PROVIDER_URL = "https://openrouter.ai/api/v1/chat/completions"; 
+
+    const response = await fetch(PROVIDER_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${CHAVE}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-oss-120b", // Certifique-se de usar o ID exato do modelo aqui
         messages: messages,
-        max_tokens: 800
+        max_tokens: 1000
       })
     });
 
@@ -23,7 +24,7 @@ exports.handler = async (event) => {
     if (!response.ok) {
       return {
         statusCode: response.status,
-        body: JSON.stringify({ error: data.error?.message || "Erro na OpenAI" })
+        body: JSON.stringify({ error: data.error?.message || "Erro no provedor OSS" })
       };
     }
 

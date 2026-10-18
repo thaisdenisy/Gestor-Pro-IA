@@ -86,7 +86,7 @@ async function enviarParaIA() {
             const aiHTML = `
                 <div class="message-wrapper ai-wrapper">
                     <div class="message ai-message">
-                        <span class="sender-name"> Assistente GPI</span>
+                        <span class="sender-name"> Secretaria Tati </span>
                         <p>${respostaIA.replace(/\n/g, '<br>')}</p>
                         <span class="time">${obterHoraAtual()}</span>
                     </div>
